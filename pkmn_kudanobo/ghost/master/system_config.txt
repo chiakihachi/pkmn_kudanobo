@@ -1,0 +1,17 @@
+﻿//------------------------------------------------------------------------------
+//System Dictionary
+//------------------------------------------------------------------------------
+//dic, yaya_config.dic		// YAYA: Dictionary setting. Must be defined first.
+
+dicdir,yaya_base
+//dic, system/yaya_shiori3.dic	// YAYA: System dictionary
+//dic, system/yaya_optional.dic	// YAYA: Optional functions dictionary
+//dic, system/yaya_compatible.dic	// YAYA: AYA backward compatibility dictionary
+
+//------------------------------------------------------------------------------
+//Execution log
+//The execution log is recorded in ayame.log. It is recommended to keep logs during development.
+//------------------------------------------------------------------------------
+// log, ayame.log	
+ignoreiolog, ID: OnSecondChange //Ignores OnSecondChange
+ignoreiolog, ID: OnMouse        //Ignores all OnMouse functions

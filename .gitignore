@@ -1,0 +1,3 @@
+*.cfg # exclude all variable files
+**/profile/* #exclude all Profile folders
+*/workfiles/ #exclude workfiles folder

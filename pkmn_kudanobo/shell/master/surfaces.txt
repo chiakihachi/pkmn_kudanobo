@@ -1,0 +1,16 @@
+charset,Shift_JIS
+
+descript
+{
+version,1
+}
+
+//ミク設定
+surface0
+{
+}
+
+//？？？設定
+surface10
+{
+}

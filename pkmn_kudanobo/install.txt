@@ -1,0 +1,7 @@
+﻿charset,UTF-8
+type,ghost
+name,Kudanobo
+directory,pkmn_kudanobo
+
+
+balloon.directory,pkmn_b

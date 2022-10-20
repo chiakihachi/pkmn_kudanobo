@@ -1,0 +1,29 @@
+﻿
+
+//sets the main encoding to UTF-8 (english)
+charset, UTF-8
+charset.dic, UTF-8
+charset.output, UTF-8
+charset.file, UTF-8
+charset.save, UTF-8
+charset.extension, UTF-8
+	
+dicdir,base
+dicdir,extend
+dicdir,pkmn
+
+//SHIORI-3.0 system dic. do not remove.
+include, system_config.txt
+
+//sets the aya debugger to english
+msglang,english
+
+//Debug tool settings
+
+//ignoreiolog, ID: OnAnchor
+ignoreiolog, ID: OnSecondChange // Ignore OnSecondChange
+ignoreiolog, ID: OnMouse // OnMouse ignore
+//iolog, off
+
+//loop limit
+looplimit,50000

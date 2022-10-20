@@ -1,0 +1,302 @@
+/* kn_menu.dic
+ *
+ * Sakura and Kero menus as well as subsequent functions.
+ * 
+ * Functions:
+ * - Sakura Menu & Battle Menu
+ * - Kero Menu & Utility Menu
+ * - Functions leading to AiTalk
+ * - Settings Menu
+ *   username, user pronouns, hemisphere,
+ *   date format, twin name, aitalkinterval
+ * - Dev functions
+ */
+
+
+//Kudari menu and dialogue
+OnSakuraMenu
+{
+    _x=""; _y=""
+    if update; _x = "\![*]\q[Update,OnUpdate_Select]"
+    if dev; _y = "\![*]\q[DEVFunc,OnDev]"
+    --
+    "\0\_q\b[2]\n\n/
+    \![*]\q[Talk to me,OnAiTalk_KudaUser]/
+    \_l[150]%(_y)\n/
+    \![*]\q[Talk to each other,OnAiTalk_KudaNobo]\n/
+    %(OnDivider)\n/
+    \![*]\q[Rules of operation,OnSettings]\n/
+    \![*]\q[Battle!,OnBattleMenu]\n/
+    \![*]\q[Nevermind,OnSakura_Cancel]/
+    \_l[150]%(_x)\n\n[half]/
+    \f[align,right]%(hour):%(minute)   %(DateFormat[0])/
+    \_q"
+    --
+    "\_l[0,0]%(OnSakura_Text)\e"
+}
+OnSakura_Text {
+    "K:Yeeeeesssss?"
+    if RAND(50) <= 10; "K:Make it quick."
+    "K:%(L0)Mh?"
+    "K:What?"
+    "K:Can I do something?"
+    if battleaddon == 1; "K:Battle!!"
+    "K:I'm listening."
+}
+
+//Battle menu, view functions in extend\pkmn and extend\pokedex
+OnBattleMenu {
+    "\0\_q\b[2]/
+    \f[align,center]Battle facility\n\n\f[align,left]"
+    --
+    if battleaddon == 1;
+        "/
+        \![*]\q[View your team,OnPKMN_Team]\n/
+        \![*]\q[Manage Pokemon,OnPKMN_Box]\n/
+        \![*]\q[Scout for Pokemon,OnPKMN_Scout]\n/
+        %(OnDivider)\n/
+        \![*]\q[Single Line,OnBattle_Single]\n/
+        \![*]\q[Double Line,OnBattle_Double]\n\n[half]/
+        \![*]\q[Return,OnSakuraMenu]"
+	elseif battleaddon == 2 {
+        if ISVAR('track') == 0; track = 0
+		elseif track > 0; track = track-1
+        --
+        "\_q\c\b[0]%(OnBattleDownload)"
+    } 
+    elseif battleaddon == 3 {
+        count++
+        "\_q\c\b[0]%(OnBattleTranslate)"
+    } 
+    else;
+        "Please click below to download the battle features.\n\n/
+        \f[align,center]\q[Download (Over WIFI!),OnBattleDownload]"
+
+}
+
+
+//Nobori menu and dialogue
+OnKeroMenu
+{ 
+    "\1\_q\b[2]\n\n/
+    \![*]\q[Talk to me,OnAiTalk_NoboUser]\n/
+    \![*]\q[Talk to each other,OnAiTalk_KudaNobo]\n/
+    %(OnDivider)\n/
+    \![*]\q[Rules of operation,OnSettings]\n/
+    \![*]\q[Can you help?,OnAid]\n/
+    \![*]\q[Nevermind,OnSakura_Cancel]\n\n[half]/
+    \f[align,right]%(hour):%(minute)   %(DateFormat[0])/
+    \_q"
+    --
+    "\_l[0,0]%(OnKero_Text)\e"
+}
+OnKero_Text {
+    "N:Well(P,) what do you need?"
+    "N:Yes?"
+    "N:Mh?"
+    "N:Do you need something?"
+    "N:May I be of assistence?"
+    "N:I can certainly help."
+    "N:Let us chat."
+    if battleaddon == 1; "N:(P...)Maybe a battle?"
+}
+
+OnAid /* import todolist, alarms and reminders */
+{
+    "\1\_q\b[2]/
+    \f[align,center]Help\n\n[half]\f[align,left]/
+    \![*]\q[Open Guide,OnAid_Readme]\n/
+    %(OnDivider)\n/
+    \![*]\q[Empty recycle bin,OnAid_Bin]\n/
+    \_l[0,145]\![*]\q[Nevermind,OnCancel]"
+} 
+OnAid_Readme { //opens readme with info
+    "\![open,readme]%(OnAid)"
+}
+OnAid_Bin { //_gomicheck checks amount of files
+	_gomicheck = FUNCTIONEX("plugin/gomi.dll", "-n")
+	
+	if _gomicheck == 0 //If the recycle bin is empty/an error occurs.
+	{
+		
+	}
+	elseif _gomicheck >= 1
+	{
+		_gomi = FUNCTIONEX("plugin/gomi.dll", "-f")
+	}
+    --
+    OnAid
+}
+
+
+//Settings menu accessible from both characters
+OnSettings
+{
+    "\0\_q\b[2]/
+    \f[align,center]Rules\n\n[half]\f[align,left]/
+    \![*]\q[Your nickname: %(username),OnSettings_Username,start]\n/
+    \![*]\q[Your pronoun: %(Term(pronoun[0])),OnSettings_Pronouns,start]\n/
+    \![*]\q[Hemisphere: %(hemisphere),OnSettings_Hemisphere]\n/
+    \![*]\q[Date: %(DateFormat[1]),OnSettings_Dateformat]\n/
+    %(OnDivider)\n/
+    \![*]\q[Twin names: %(KudaNoboName[0]) & %(KudaNoboName[1]),OnSettings_Knname]\n/
+    \![*]\q[Talk: %(TalkRateName),OnSettings_Talkrate]\n/
+    \![*]\q[Nevermind,OnCancel]"
+}
+OnSettings_Username { //letter input
+	if reference0 == "start"; "\![open,inputbox,OnSettings_Username,-1,%(username)]"
+	else {
+        if reference0 == ""; username = "Trainer"
+        else {
+            _u = reference0
+            _u = RE_REPLACE(_u,'\%|\(|\)|"|\.','')
+            _u = RE_REPLACE(_u, CHR(44),'')
+		    username = _u
+        }
+        --
+        OnSettings
+	}
+}
+OnSettings_Pronouns {
+    case reference0 {
+        when "start";
+            "\_q\f[align,center]Pronouns\n\n[half]\f[align,left]/
+            \![*]\q[He/Him,OnSettings_Pronouns,he]	\_l[140]\![*]\q[They/Them,OnSettings_Pronouns,they]\n/
+            \![*]\q[She/Her,OnSettings_Pronouns,she]	\_l[140]\![*]\q[User defined,OnSettings_Pronouns,user]/
+            "
+        when "he"; pronoun = "he,him,his,his,himself,s"
+		when "she"; pronoun = "she,her,her,hers,herself,s"
+		when "they"; pronoun = "they,them,their,theirs,themselves,"
+		when "user" {
+            _t = "she,her,her,hers,herself,s"
+            "\b2\_q\f[align,center]Pronoun guide\n\f[align,left]/
+            Subject 				\_l[150]they\n/
+            Object 				    \_l[150]them\n/
+            Possesive Adjective	    \_l[150]their\n/
+            Possesive Pronoun		\_l[150]theirs\n/
+            Reflexive/Intensive	    \_l[150]themselves\n/
+            Is/Are - s/        	    \_l[150]\n/
+            \f[align,center]''She'' written example:\n/
+            she,her,her,hers,herself,s/
+            \![open,inputbox,OnSettings_Userpronouns,-1,%(_t)]"
+        }
+    }
+	--
+    if reference0 != "user" && reference0 != "start"; OnSettings
+}
+OnSettings_Userpronouns {
+	pronoun = reference0
+	OnSettings
+}
+OnSettings_Hemisphere { //click change
+    if hemisphere == "Upper"; hemisphere = "Lower"
+    else; hemisphere = "Upper"
+    OnSettings
+}
+OnSettings_Dateformat { //click change
+    dateformat = (dateformat++)%4
+    OnSettings
+}
+OnSettings_Knname { //click change
+    knname = (knname++)%3
+    OnSettings
+} 
+KudaNoboName {
+    _name = "Kudari,Nobori" //japanese default
+    case knname {
+        when 1; _name = "Emmet,Ingo" //english
+        when 2; _name = "Her,Hin" //german
+    }
+    _name
+}
+OnSettings_Talkrate { //click change
+    case aitalkinterval {
+		when 45; aitalkinterval = 90
+		when 90; aitalkinterval = 270
+		when 270; aitalkinterval = 400
+		when 400; aitalkinterval = 0
+		when 0; aitalkinterval = 45
+		others; aitalkinterval = 270
+	}
+    OnSettings
+}
+TalkRateName {
+	case aitalkinterval {
+		when 90; "Every minute";
+		when 270; "Every 3 minutes"
+		when 400; "Every 5 minutes"
+		when 0; "Silent"
+		when 45; "Every 30 seconds"
+		others; "ERROR"
+	}	
+}
+
+
+//Clickable to start update
+OnUpdate_Select
+{
+	"\![update,ghost+shell+balloon]"
+}
+
+
+
+
+//Developer functions enabled when dev==1
+OnDev {
+    /*
+    "\q[shell,OnDevReload,shell]\n/
+    \q[balloon,OnDevReload,balloon]\n/
+    \q[ghost,OnDevReload,ghost]\n\n/
+    \q[Make Nar,OnDevCreate,nar]\n/
+    \q[Make Update,OnDevCreate,update]\n/
+    \q[Make Both,OnDevCreate,all]"*/
+   "\0\_q\b[2]DEV\n\n/
+    \![*]\q[Surface Test,OnDevShell]\n/
+    %(OnDivider)\n/
+    \![*]\q[TestFunction,OnTestFunction]\n/
+    \![*]\q[Script Input,OnDev_Stuff,scriptinput]\n/
+    \![*]\q[Dev Interface,OnDev_Stuff,devinterface]\n/
+    \n\![*]\q[Nevermind,OnSakura_Cancel]"
+}
+OnDevShell {
+    "\0\_q\b[2]SHELL\n\n/
+    \![*]\q[Scope Kudari,OnDev_Stuff,scope,0].../
+    \![*]\q[Scope Nobori,OnDev_Stuff,scope,1]\n/
+    %(OnDivider)\n/
+    \![*]\q[S0,OnDev_Stuff,surface,0].../
+    \![*]\q[S1,OnDev_Stuff,surface,1].../
+    \![*]\q[S2,OnDev_Stuff,surface,2].../
+    \![*]\q[S3,OnDev_Stuff,surface,3]\n/
+    \![*]\q[S4,OnDev_Stuff,surface,4].../
+    \![*]\q[S300,OnDev_Stuff,surface,300].../
+    \n%(OnDivider)/
+    \n\![*]\q[Nevermind,OnSakura_Cancel]"
+}
+OnDev_Stuff {
+    if reference0 == "scope"; OnC(TOINT(reference1))
+    elseif reference0 == "surface"; OnS(TOINT(reference1))
+    elseif reference0 == "scriptinput"; "\![open,inputbox,OnDev_Input,-1]"
+    elseif reference0 == "devinterface"; "\![open,developer]"
+    --
+    if reference0 == "scope" || reference0 == "surface"; OnDevShell
+    else; OnDev
+}
+OnDev_Input {
+    "\![open,inputbox,OnDev_Input,-1]"
+    --
+    reference0
+}
+OnDevReload {
+    case reference0 {
+        when "shell"; "\![reload,shell]"
+        when "balloon"; "\![reload,balloon]"
+        when "ghost"; "\![reload,ghost]"
+    }
+}
+OnDevCreate {
+    case reference0 {
+        when "nar"; "\![execute,createnar]"
+        when "update"; "\![execute,createupdatedata]"
+        when "all"; "\![execute,createupdatedata]\![execute,createnar]"
+    }
+}

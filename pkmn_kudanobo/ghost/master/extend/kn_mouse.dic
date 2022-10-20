@@ -1,0 +1,70 @@
+/* kn_mouse.dic
+ *
+ * Handles all mouse functions like double clicking and petting.
+ * 
+ * Functions:
+ * - Double click to open menus
+ * - Patting dialogue and function
+ */
+
+//ref3 = (number of char), ref4 = (collision name)
+OnMouseDoubleClick
+{
+    if reference3 == 0; OnSakuraMenu
+    else; OnKeroMenu
+}
+
+
+//ref3 = (number of char), ref4 = (collission name)
+OnMouseMove
+{
+	_char = ""
+	if reference3 == 0 || reference3 == 1 && reference4 != "" //if char0 and over a pet area
+	{
+		stroke++
+		
+		if stroke >= 40 {
+			stroke = 0
+			if reference3 == 0; _char = "K"
+			else; _char = "N"
+			EVAL("OnPat_%(_char)_%(reference4)")
+		}
+	}
+	else; stroke = 0
+}
+
+OnPat_K_Head
+{
+	"K:You know I wear a hat?"
+	"K:This is strange."
+	"K:Ok."
+	"K:Pat."
+	"K:You're weird(P.) I like that."
+	"K:I'd rather battle you."
+	--
+	"\e"
+}
+OnPat_N_Head
+{
+	"N:Oh."
+	"N:Thank you(P,) %(username)."
+	"N:It would be nicer without our hats(P...)"
+	"N:Would you like a pat back(P?) Pat(P,) pat."
+	"N:This is very much appreciated."
+	--
+	"\e"
+}
+
+OnPat_K_Face
+{
+	"K:Now this is close."
+	--
+	"\e"
+}
+OnPat_N_Face
+{
+	"N:Ah- You're really forward."
+	"N:I am a bit embarrassed(P...)"
+	--
+	"\e"
+}

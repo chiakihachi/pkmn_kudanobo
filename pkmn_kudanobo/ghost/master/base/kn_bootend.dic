@@ -1,0 +1,195 @@
+﻿/* kn_bootend.dic
+ *
+ * Handles all boot functionality as well as shell/ghost switching.
+ * Includes dialogue for such.
+ * 
+ * Functions:
+ * - First boot with introduction
+ * - Regular boot dialogue
+ *   (for shell and ghost switching too as well as vanish)
+ * - Dialogue for closing the ghost
+ * - Minimizing the ghost
+ * - Changing ghosts/shells
+ */
+
+//First boot, ghost introduction
+OnFirstBoot
+{
+	deleteshitai = 0
+	aitalkinterval = 270
+	dev = 0
+	battleaddon = 1 //0=Not downloaded 1=Finished 2=File download 3=File parse
+	pokeball = 10
+	pkmnowned = IARRAY
+    pkmnowned ,= ("1,2,4,1,5,100,14,15,NULL,NULL,0,0,0,0,0,0,0,0,0,0,0,0")
+	pkmnteam = ("0,90.0") //position of caught pokemon,current hp
+	username = "Trainer"
+	pronoun = "they,them,their,theirs,themselves,"
+	knname = 0 //Kudari:Nobori,Emmet:Ingo,Her:Hin
+	language = 9 //1=jap 6=german 9=eng
+	dateformat = 0
+	hemisphere = "Upper" //upper,lower
+	stroke = 0
+	mikireflag = 0 //look this up again
+	--
+	OnMap_Variables
+	--
+	On3DVariables
+	--
+	On3DInit("firstboot")
+}
+OnFirstBoot_Dialogue
+{
+	"N:Ah(P,) it seems we have arrived at our station(P...)(P88)K:Finally(P!)(P8)/
+	N:\nWell yes(P,) it took a while to get here(P.)(P88)\c\b[-1]K:\c\w8\![raise,OnS,300]It's nice though(P.)(P8)/
+	N:I agree(P!) It is very charming indeed!(P88)(P8)\cK:\c\b[-1]/
+	N:Now(P...) Oh(P!) hello there(P.)K:\![raise,OnS,0]N: It is a pleasure seeing you again after we met at Nimbasa station.(P88)(P8)\c\b[-1]/
+	K:You remember us.(P8)N:We have been told we are hard to forget after all.(P88)/
+	\c\b[-1]K:\c\b[-1]/
+	N:Now that we are speaking with each other, we'd like to know your name so we may address you properly from now on.(P88)(P88)/
+	\![raise,OnFirstBoot_Username,start]"
+}
+OnFirstBoot_Username { //letter input
+	if reference0 == "start"; "\![open,inputbox,OnFirstBoot_Username,-1,%(username)]"
+	else {
+        if reference0 == ""; username = "Trainer"
+        else {
+            _u = reference0
+            _u = RE_REPLACE(_u,'\%|\(|\)|"|\.','')
+            _u = RE_REPLACE(_u, CHR(44),'')
+		    username = _u
+        }
+        --
+        OnFirstBoot_Dialogue2
+	}
+}
+OnFirstBoot_Dialogue2
+{
+	"K:%(username) is a good name(P.) Hello %(username)(P,) what are your pronouns?(P88)(P88)%(L0)/
+	\![raise,OnFirstBoot_Pronouns,start]"
+}
+OnFirstBoot_Pronouns {
+    case reference0 {
+        when "start";
+            "\_q\f[align,center]Pronouns\n\n[half]\f[align,left]/
+            \![*]\q[He/Him,OnFirstBoot_Pronouns,he]	\_l[140]\![*]\q[They/Them,OnFirstBoot_Pronouns,they]\n/
+            \![*]\q[She/Her,OnFirstBoot_Pronouns,she]	\_l[140]\![*]\q[User defined,OnFirstBoot_Pronouns,user]/
+            "
+        when "he"; pronoun = "he,him,his,his,himself,s"
+		when "she"; pronoun = "she,her,her,hers,herself,s"
+		when "they"; pronoun = "they,them,their,theirs,themselves,"
+		when "user" {
+            _t = "she,her,her,hers,herself,s"
+            "\b2\_q\f[align,center]Pronoun guide\n\f[align,left]/
+            Subject 				\_l[150]they\n/
+            Object 				    \_l[150]them\n/
+            Possesive Adjective	    \_l[150]their\n/
+            Possesive Pronoun		\_l[150]theirs\n/
+            Reflexive/Intensive	    \_l[150]themselves\n/
+            Is/Are - s/        	    \_l[150]\n/
+            \f[align,center]''She'' written example:\n/
+            she,her,her,hers,herself,s/
+            \![open,inputbox,OnFirstBoot_Userpronouns,-1,%(_t)]"
+        }
+    }
+	--
+    if reference0 != "user" && reference0 != "start"; OnFirstBoot_Dialogue3
+}
+OnFirstBoot_Userpronouns {
+	pronoun = reference0
+	OnSettings
+}
+OnFirstBoot_Dialogue3
+{
+	"N:Thanks for telling us(P.)(P8) There is one more thing before we wrap this up(P.)(P8)/
+	K:Follow the station rules(P!) Here they are(P!)(P8)\![open,readme]\e"
+}
+
+
+//Other booting processes
+OnBoot { On3DInit("fastboot") }
+OnBoot_Dialogue
+{
+	if reference0 == "firstboot"; OnFirstBoot_Dialogue
+	elseif reference0 == "change" {
+		OnRegularBoot
+	}
+	elseif reference0 == "update" {
+
+	}
+	elseif reference0 == "shellchange" {
+
+	}
+	elseif reference0 == "minimizing" {
+
+	}
+	elseif reference0 == "vanished" { 
+
+	}
+	else {
+		OnRegularBoot
+		--
+		OnBoot_Checks
+	}
+}
+//Actual booting dialogue
+OnRegularBoot : pool
+{
+	
+	if Time == "morning" {
+			
+	}
+	if Time == "midday" {
+	
+	}
+	if Time == "evening" {
+	
+	}
+	if Time == "night" {
+	
+	}
+	
+	"%(OnSuSync(1))K:\0\s[1]Hellooooooo-\w8\w8%(L)\w8\w8"
+}
+//Checks for updates
+OnBoot_Checks {	update = 1; "\![updatebymyself,checkonly]" }
+
+//Closing the ghost
+OnClose
+{
+	"%(OnSuSync(1))\-\e"
+}
+
+//Miniziming the ghost
+OnWindowStateMinimize 
+{
+	"\![embed,OnAllReset,0]\1\s[-1]\0\s[-1]"
+}
+OnWindowStateRestore
+{
+	"\1\s[0]\0\s[0]"
+	--
+	On3DInit("minimizing")
+}
+
+//Changing ghosts
+OnGhostChanging
+{ 
+	"\0K:Bye byeeee.\w8"
+	--
+	"\-\e"
+}
+OnGhostChanged
+{
+	On3DInit("change")
+}
+//Changing shells
+OnShellChanging {
+	"\![embed,OnAllReset,0]\w9\e"
+}
+OnShellChanged {
+	On3DInit("shellchange")
+}
+
+
+

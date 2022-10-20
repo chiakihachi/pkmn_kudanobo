@@ -1,0 +1,275 @@
+/* kn_functionality.dic
+ *
+ * Base functions that are used for script parsing etc.
+ * 
+ * Functions:
+ * - OnTranslate that replaces
+ *   K:/N: and their names as well as other things
+ * - OnSlow to slow down text
+ * - File type extract
+ * - OnBalloonBreak to stop lip talk
+ * - OnUserInputCancel to ensure user inputs at firstboot
+ * - Function to add a divider line
+ * - Function for loading bar
+ * - Date Formats
+ * - Seasons
+ * - Capitalization, Uppercase, Lowercase of words
+ * - Pronoun grammar (is/are) (do/does)
+ * - Update functions
+ */
+
+
+//Parses all Script in the ghost
+OnTranslate
+{
+    
+    _talk = reference[0]
+
+    //enables %() eval in script input
+	//_talk = EVAL('"' + REPLACE(_talk,'"','" + CHR(0x22) + "') + '"')
+    _talk = EVAL('"' + REPLACE(_talk,'"','""') + '"')
+
+    //parses char switch
+    _talk = REPLACE(_talk,"K:","\![embed,OnL0]\![embed,OnC0]\0\![embed,OnL1]")
+    _talk = REPLACE(_talk,"N:","\![embed,OnL0]\![embed,OnC1]\1\![embed,OnL1]")
+    _talk += "\w8"
+    _talk = REPLACE(_talk,"\e","\![embed,OnL0]\e")
+
+        /* Times to add auto timing... forget auto timing man...
+        when N: or K:
+        if ... - no talk; pause \w6
+        if . - talk; pause \w5
+        if , - talk; pause \w3
+		if ! - talk; pause \w4
+		if ? - talk; pause \w6
+        */
+		
+	_talk = REPLACE(_talk,"(P%(CHR(44)))","%(L0)%(CHR(44))\w3%(L1)") //,
+	_talk = REPLACE(_talk,"(P.)","%(L0).\w6%(L1)") //.
+	_talk = REPLACE(_talk,"(P...)","%(L0)...\w6%(L1)") //...
+	_talk = REPLACE(_talk,"(P!)","%(L0)!\w4%(L1)") //!
+	_talk = REPLACE(_talk,"(P?)","%(L0)?\w6%(L1)") //?
+	_talk = REPLACE(_talk,"(P8)","%(L0)\w8%(L1)") //w8
+	_talk = REPLACE(_talk,"(P88)","%(L0)\w8\w8%(L1)") //w8
+
+	//parses char names
+    _talk = RE_REPLACE(_talk,"Kudari|Emmet",KudaNoboName[0])
+    _talk = RE_REPLACE(_talk,"Nobori|Ingo",KudaNoboName[1])
+
+ 	//parses " from two '
+	_talk = REPLACE(_talk,"''",'"')
+	_talk = REPLACE(_talk,"!(c0)",CHR(44))
+
+
+    //bugfix; display as is without evaluation
+	//_talk = "\_?" + _talk
+    
+    TOSTR(_talk)
+}
+p {
+	_str = ""
+	case _argv[0] {
+		when "..."; _str = "%(L0)...\w6%(L1)"
+		when "."; _str = "%(L0).\w6%(L1)"
+		when ","; _str = "%(L0),\w3%(L1)"
+		when "!"; _str = "%(L0)!\w4%(L1)"
+		when "?"; _str = "%(L0)?\w6%(L1)"
+	}
+	_str
+}
+//Slows down text by adding \w[_argv[1]]
+OnSlow
+{
+    _str = TOSTR(_argv[0])
+    //replace punctuation marks
+    _str = REPLACE(_str,"(q0)","'")
+    _str = REPLACE(_str,'(q1)','"')
+    _str = REPLACE(_str,'(d0)','.')
+
+    _len = STRLEN(_str) * 4
+    _pause = "\w" + TOINT(_argv[1])
+    for _x = 0; _x <= _len; _x++
+    {
+        if (_x%4) == 1; _str = INSERT(_str,_x,_pause)
+    }
+    //replace comma
+    _str = REPLACE(_str,"(%(_pause)c%(_pause)0%(_pause))","%(CHR(44))")
+    _str
+}
+
+
+//Extracts file type of a file
+Y.GetFileType
+{
+	_filepath = SPLITPATH(_argv)
+	_size = (ARRAYSIZE(_filepath))-1
+	if _size == -1
+	{
+		_size
+		return
+	}
+	_filetype = ERASE(_filepath[_size],0,1)
+	_filetype
+}
+
+
+//Occurs on Balloon break
+OnBalloonBreak { L0 }
+OnBalloonClose { L0 }
+
+//Occurs when closing an input box
+OnUserInputCancel
+{
+	if reference0 == "OnFirstBoot_Username"; "\![open,inputbox,OnFirstBoot_Username,-1,%(username)]"
+	elseif reference0 == "OnFirstBoot_Userpronouns"; "\![raise,OnFirstBoot_Pronouns,start]"
+}
+
+
+//Renders a line
+OnDivider {
+    "─────────────────────────────" // chr(9472) 29 per line
+}
+
+//Renders a loading bar
+OnProgressBar
+{
+	_startx = TOINT(_argv[2])
+	_starty = TOINT(_argv[3])
+		//base
+	"\_b[images/bar_base.png,%(_startx),%(_starty),--option=use_self_alpha]"
+	--
+	//bar overlay: bar starts at 26 pixels, 307 pixels wide
+		_total = TOREAL(_argv[0]) //total amount for a full bar
+		_portion = TOREAL(_argv[1]) //amount right now
+		_x = TOINT( ((_portion/_total) * 307) + 26) //x value to clip at based on percentage of progress
+		
+	"\_b[images/bar_overlay.png,%(_startx),%(_starty),--option=use_self_alpha,--clipping=0 0 %(_x) 23]"
+	--
+	//finished files    -   total files
+
+	"\n[250]\f[align,right]/
+	%(TOINT(_portion)) of %(TOINT(_total)) files/
+	\f[default]"
+}
+
+
+//Returns date and format written out
+DateFormat 
+{
+    _date = IARRAY
+    case dateformat {
+        when 1; _date = "%(month).%(day).%(year),month.day.year"
+        when 2; _date = "%(DayFormat) %(MonthFormat),day(th) month"
+        when 3; _date = "%(WeekFormat). %(DayFormat) %(MonthFormat),weekday. day(th) month"
+        others; _date = "%(day).%(month).%(year),day.month.year"
+    }
+    _date
+}
+WeekFormat {
+    _week = "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday"
+    _week[weekday]
+}
+DayFormat {
+    case day {
+        when "1", "21", "31"; "%(day)st"
+        when "2", "22"; "%(day)nd"
+        when "3", "23"; "%(day)rd"
+        others; "%(day)th"
+    }
+}
+MonthFormat {
+    _months = "January,February,March,April,May,June,July,August,September,October,November,December"
+    _months[month-1]
+}
+
+Season
+{
+	case month {
+		when 1,2,12 {
+			if hemisphere = "Upper"; "winter"
+			else; "summer"
+		}
+		when 3,4,5 {
+			if hemisphere = "Upper"; "spring"
+			else; "autumn"
+		}
+		when 6,7,8 {
+			if hemisphere = "Upper"; "summer"
+			else; "winter"
+		}
+		others { //9,10,11
+			if hemisphere = "Upper"; "autumn"
+			else; "spring"
+		}
+	}
+}
+Time
+{
+	case hour {
+		when 5-10;
+			"morning"
+		when 11-14;
+			"midday"
+		when 15-20;
+			"evening"
+		when 21-23,0-4;
+			"night"
+	}
+}
+
+
+//Capitalization of words
+term		{ TOLOWER(_argv[0]) }	 //lowercase
+Term		{ Capitalize(_argv[0]) } //normal
+TERM 		{ TOUPPER(_argv[0]) }	 //uppercase
+Capitalize
+{
+  _buffer = SUBSTR(_argv[0],0,1)
+  _argv[0] = ERASE(_argv[0],0,1)
+  _argv[0] = INSERT(_argv[0],0,TOUPPER(_buffer))
+  _argv[0]
+}
+
+//Pronoun grammar
+isare
+{
+	if pronoun[5] == "s"; "is"
+	else; "are"
+}
+dodoes
+{
+	if pronoun[5] == "s"; "does"
+	else; "do"
+}
+
+
+//time function
+OnMinuteChange {
+	if battleaddon == 1; pokeball += 1
+}
+
+
+//Update functions
+OnUpdateCheckComplete //Check if new update available
+{
+	if (reference0 == "none" && update); update = 0 //no new files
+ 	else; update = 1
+}
+OnUpdateCheckFailure { update = 0 }
+OnUpdateComplete
+{
+	if reference0 == "none" && !update == 0 //if the ghost had nothing to update with
+ 	{
+ 		
+	}
+	elseif reference0 == "none" && update;
+		update = 0
+ 	else //if the ghost has updated successfully
+	{
+        update = 0
+ 	}
+}
+OnUpdateFailure
+{
+	update = 0
+}

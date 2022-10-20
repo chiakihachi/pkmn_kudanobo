@@ -1,0 +1,151 @@
+﻿
+character0 {}
+
+//NOTICES
+//morph is for random shape disfiguration.
+
+//TEMPLATE
+//mothion [ID] .animation, [motion file No], [loop flag], [number of morphs], [blend time]
+//mothion [ID] .morph [ID], param, [shape No], [interval]
+//mothion [ID] .morph [ID], key, [frame value], [shape animation value]
+
+character1
+{
+    physics,1,1.0
+    filename,Kudari/Emmet.pmx
+    camera,1
+
+
+    mothion0.animation,000,1,1,500
+    mothion0.morph0,param,0,8
+    mothion0.morph0,key,0,0.0
+    mothion0.morph0,key,3,1.0
+    mothion0.morph0,key,8,0.0
+
+    //Greeting
+    mothion1.animation,001,0,1,500
+    mothion1.morph0,param,0,5
+    mothion1.morph0,key,0,0.0
+    mothion1.morph0,key,3,1.0
+    mothion1.morph0,key,8,0.0
+    mothion1.nextmothion,0
+    
+    //Idle whipping
+    mothion2.animation,002,0,1,500
+    mothion2.morph0,param,0,5
+    mothion2.morph0,key,0,0.0
+    mothion2.morph0,key,3,1.0
+    mothion2.morph0,key,8,0.0
+    mothion2.nextmothion,200
+        mothion200.animation,002,0,1,500
+    mothion200.morph0,param,0,5
+    mothion200.morph0,key,0,0.0
+    mothion200.morph0,key,3,1.0
+    mothion200.morph0,key,8,0.0
+    mothion200.nextmothion,2
+
+    //Lookaround (left screen side)
+    mothion3.animation,003,0,1,500
+    //mothion3.nextmothion,0
+    //Lookaround (right screen side)
+    mothion4.animation,004,0,1,500
+    mothion4.nextmothion,0
+    
+    //Lookaround (both sides loop)
+    mothion300.animation,003,0,1,500
+    mothion300.nextmothion,400
+    mothion400.animation,004,0,1,50
+    mothion400.nextmothion,300
+ 
+
+
+collision,1,Hair
+collision,2,Face
+collision,3,Face
+collision,4,Face
+collision,5,Face
+collision,6,Face
+collision,7,Face
+collision,8,Face
+collision,9,Face
+collision,10,Face
+collision,11,Face
+collision,12,Face
+collision,13,Face
+
+lipsync,shape,6,0.6
+lipsync,shape,7,0.6
+lipsync,shape,8,0.5
+lipsync,shape,9,0.6
+lipsync,shape,10,0.5
+lipsync,shape,11,0.3
+
+}
+
+character2
+{
+    physics,1,1.0
+    filename,Nobori/Ingo.pmx
+    camera,0
+
+    mothion000.animation,000,1,1,500
+    mothion0.morph0,param,0,8
+    mothion0.morph0,key,0,0.0
+    mothion0.morph0,key,3,1.0
+    mothion0.morph0,key,8,0.0
+
+
+    mothion001.animation,001,0,1,500
+    mothion1.morph0,param,0,5
+    mothion1.morph0,key,0,0.0
+    mothion1.morph0,key,3,1.0
+    mothion1.morph0,key,8,0.0
+    mothion001.nextmothion,0
+
+        mothion002.animation,002,0,1,500
+    mothion2.morph0,param,0,5
+    mothion2.morph0,key,0,0.0
+    mothion2.morph0,key,3,1.0
+    mothion2.morph0,key,8,0.0
+    mothion002.nextmothion,3
+        mothion003.animation,002,0,1,500
+    mothion3.morph0,param,0,5
+    mothion3.morph0,key,0,0.0
+    mothion3.morph0,key,3,1.0
+    mothion3.morph0,key,8,0.0
+    mothion003.nextmothion,2
+
+        mothion4.animation,004,0,1,50
+    mothion4.morph0,param,0,5
+    mothion4.morph0,key,0,0.0
+    mothion4.morph0,key,3,1.0
+    mothion4.morph0,key,8,0.0
+    
+
+    mothion5.animation,005,1,1,0
+    mothion5.morph0,param,0,5
+    mothion5.morph0,key,0,0.0
+    mothion5.morph0,key,3,1.0
+    mothion5.morph0,key,8,0.0
+
+collision,1,Hair
+collision,2,Face
+collision,3,Face
+collision,4,Face
+collision,5,Face
+collision,6,Face
+collision,7,Face
+collision,8,Face
+collision,9,Face
+collision,10,Face
+collision,11,Face
+collision,12,Face
+collision,13,Face
+
+lipsync,shape,6,0.6
+lipsync,shape,7,0.6
+lipsync,shape,8,0.5
+lipsync,shape,9,0.6
+lipsync,shape,10,0.5
+lipsync,shape,11,0.3
+}

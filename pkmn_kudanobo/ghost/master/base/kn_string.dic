@@ -1,0 +1,190 @@
+/* kn_string.dic
+ *
+ * Defines right click menu and such.
+ * 
+ * Functions:
+ * - 
+ */
+
+On_username
+{
+	username
+}
+
+
+On_homeurl //update path
+{
+	"https://raw.githubusercontent.com/changeside/pkmn_kudanobo/main/pkmn_kudanobo/"
+}
+
+On_recommendrootbutton.caption
+{
+	"SSP Website"
+}
+On_sakura.recommendsites
+{
+	"SSP"
+	--
+	"%ASC(1)http://ssp.shillest.net/%ASC(2)"
+}
+ 
+
+On_portalrootbutton.caption
+{
+	"Dev Social Media"
+}
+On_sakura.portalsites
+{
+	"Chiaki Twitter."
+	--
+	"%ASC(1)http://changeside.tumblr.com%ASC(2)"
+}
+
+
+
+ 
+On_updatebutton.caption
+{
+	"Update Procedures"
+}
+
+
+On_dressuprootbutton.caption
+{
+	"Dressup"
+}
+
+
+On_headlinesenserootbutton.caption
+{
+	"RSS/Headlines"
+}
+
+
+On_readmebutton.caption
+{
+	"Read the information"
+}
+
+
+On_vanishbutton.caption
+{
+	"Uninstall"
+}
+
+
+On_shellrootbutton.caption
+ {
+	"Choose 3D Model"
+}
+
+
+On_ghostrootbutton.caption
+{
+	"Change this Ghost"
+}
+
+
+On_callghostrootbutton.caption
+ {
+	"Call another Ghost"
+}
+
+
+On_quitbutton.caption
+{
+	"Quit"
+}
+
+
+
+ //---- 소멸 지시 버튼 표시 교체 -------------------------------------------------------
+On_vanishbuttonvisible
+{
+ 	if deleteshitai == 1; 1
+	else; 0
+}
+
+//---- 딳벍뭷궻뫜궻긕?긚긣뼹롦벦 -------------------------------------------------------
+On_otherghostname
+{
+	// ghostexlist = ""
+	// _i = 0
+	// while _i >= 0
+	// {
+		// _ghostname = NAMETOVALUE("reference%_i")
+		// if _ghostname != ""
+		// {
+			// if _i > 0; ghostexlist += ","
+			// ghostexlist += _ghostname[0]
+			// _i++
+		// }
+		// else; _i = -1
+	// }
+	//Rewrote this... because I wanted to split it up by C_BYTE1 and I figured this is probably more efficient
+	ghostexlist = ""
+	foreach reference; _ghost
+	{
+		if ghostexlist != ""; ghostexlist += C_BYTE1
+		ghostexlist += _ghost[0]
+	}
+	ghostexcount = ARRAYSIZE(SPLIT(ghostexlist,C_BYTE1))
+}
+/*
+On_installedballoonname
+{
+	balloonlist = ""
+	_i = 0
+	while _i >= 0
+	{
+		_ghostname = NAMETOVALUE("reference%_i")
+		if _ghostname != ""
+		{
+			if _i > 0; balloonlist += ","
+			balloonlist += _ghostname[0]
+			_i++
+		}
+		else; _i = -1
+	}
+	ballooncount = ARRAYSIZE(balloonlist)
+}*/
+
+//---- SHIORI 듫쁀륃뺪 ------------------------------------------------------------------
+On_version
+{
+	GETSETTING(AYAINFO_VERSION)
+}
+
+On_craftman
+{
+	"umeici"
+}
+
+On_craftmanw
+{
+	"梅市"
+}
+
+On_name
+{
+	"AYA"
+}
+
+//---- Owned SSTP 用 uniqueid 取得 ------------------------------------------------------
+On_uniqueid
+{
+	uniqueid = reference0
+}
+
+//---- hwnd 取得 ------------------------------------------------------------------------
+On_hwnd
+{
+	sakurahwnd    = reference0[0]
+	kerohwnd      = reference0[1]
+	sakurablnhwnd = reference1[0]
+	keroblnhwnd   = reference1[1]
+}
+On_\person
+{
+ 	person
+} 

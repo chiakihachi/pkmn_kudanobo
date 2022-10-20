@@ -1,0 +1,239 @@
+/* kn_pokedex.dic
+ *
+ * Download functions for the pokedex. Purely dev based so the dev can update it because the stupid shit didnt work cuz ssp is tOO WEAK.
+ * 
+ * Functions:
+ * - Download links and download function
+ * - YAYA parsing function that is not quite functional for large files
+ */
+
+
+
+OnDownloadList : array { 
+	/*
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_species.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_species_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_abilities.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_dex_numbers.csv" //what is this for wtf
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_egg_groups.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_evolution.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_form_generations.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_form_names.csv" //filter out languages????
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_forms.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_game_indices.csv" //what is this forrrrrr
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_items.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_move_method_prose.csv" //move learn descriptions. maybe not needed????
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_move_methods.csv"
+	 "https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_moves.csv" //ALREADY DOWNLOADED DUE TO FILE SIZE
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_types.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon_stats.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/stats.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/stat_names.csv" //wont need all names
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/types.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/type_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/type_game_indices.csv" //what is this for????
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/type_efficacy.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/natures.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/nature_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/nature_battle_style_preferences.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/moves.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_targets.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta_stat_changes.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta_category_prose.csv" //do i need this???
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta_categories.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta_ailments.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_meta_ailment_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_flags.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_flag_map.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_damage_classes.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/move_battle_styles.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/machines.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/items.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/item_pockets.csv" //probably dont need this????
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/item_names.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/item_fling_effects.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/item_flags.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/item_categories.csv"
+	*/
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/growth_rates.csv"
+	/*
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/genders.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/experience.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/evolution_triggers.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/evolution_chains.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/egg_groups.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/characteristics.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/berries.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/berry_flavors.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/abilities.csv"
+	"https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/ability_names.csv"*/
+
+}
+
+
+OnBattleDownload
+{
+	//track == (ARRAYSIZE(OnDownloadList)+1)
+	if ARRAYSIZE(FENUM('var/')) == ARRAYSIZE(OnDownloadList) { 
+		"\0K:Data downloaded.N:How wonderful!!%(L0)\w8\c"
+		--
+		ERASEVAR("track")
+		battleaddon = 3
+		count = 0
+		OnBattleTranslate
+	} 
+	else {
+		_i = ""; _filename = ""; _split = ""; battleaddon = 2
+		_i = OnDownloadList[track]
+		_split = SPLIT(_i,'/')
+		_filename = _split[ARRAYSIZE(_split)-1]
+		_filename = REPLACE(_filename,".csv",".dic")
+
+
+
+		_out = ""; _difference = TOINT(ARRAYSIZE(OnDownloadList)-track)
+		_total = TOINT(ARRAYSIZE(OnDownloadList))
+		_portion = TOINT(track)
+		_out += "\0\![set,choicetimeout,-1]\![set,balloontimeout,-1]\_q\f[align,center]Download Progress\n\n\f[default]"
+		_out += OnProgressBar(_total,_portion,0,75)
+
+		_out += "\![execute,http-get,%(_i),--async=OnBattleDownload,--file=%(_filename)]"
+
+		track = track + 1
+		_out
+	}
+}
+OnBattleDownload_ParseFailure
+{
+	"K:Error.N:Perhaps you should try it later.\nYou can continue the download through the menu."
+}
+
+
+OnBattleTranslate {
+	if ARRAYSIZE(FENUM('pkmn/')) == ARRAYSIZE(OnDownloadList) {
+		"N:We will now put everything in order.K:Battle us soon!!!!%(L0)\w8\w8"
+		--
+		battleaddon = 1
+		//pokeball = 10
+		ERASEVAR(count)
+		--
+		//restart them here
+		"\![change,ghost,kudanobo]"
+	}
+	elseif count%20 == 19; "N:Please click battle again.\w8\![change,ghost,kudanobo]"
+	else {
+		_txt = IARRAY; _ref = FENUM('var/')[0]; _out = ""; _buff = ""
+		_name = REPLACE(_ref,".dic","")
+		_ref = "var/" + _name + ".dic"
+		_buff = ""; _header = 1
+		_calc = ""; _TEMP = ""
+		_pow = ""; _x = ""; _y = ""; _substr = ""; _pos = 0
+		_out = OnProgressBar(ARRAYSIZE(OnDownloadList),ARRAYSIZE(FENUM('pkmn/')),0,75)
+
+		//open file read only 
+    	if FOPEN(_ref,'r') {
+			while (_buff = FREAD(_ref)) != -1 {
+            	if _header {
+                	_txt ,= ("%(_name) : array {","","//%(_buff)","")
+                	_header = !_header
+            	} 
+				else {
+					if _name == "growth_rates" {
+						//Translate the LaTeX equations into Yaya
+						
+						x = 1
+						_calc = ""
+						_calc = _buff
+						
+							//remove unneccessary info
+							_calc = REPLACE(_calc,'"\begin{cases}','')
+							_calc = REPLACE(_calc,'\end{cases}"','')
+							_calc = REPLACE(_calc,'\left','')
+							_calc = REPLACE(_calc,'\right','')
+							_calc = REPLACE(_calc,'\frac{','')
+							_calc = REPLACE(_calc,' ','')
+							_calc = REPLACE(_calc,'\\','')
+							//replace <=
+							_calc = REPLACE(_calc,'\leq','<=')
+							//replace remainder %
+							_calc = REPLACE(_calc,'\bmod','%')
+							//replace floor function
+							_calc = REPLACE(_calc,'\lfloor','FLOOR(')
+							_calc = REPLACE(_calc,'\rfloor',')')
+							//replace /
+							_calc = REPLACE(_calc,'}{','/')
+							_calc = REPLACE(_calc,'}','')
+							//replace *
+							_calc = RE_REPLACE(_calc,'(?<=[0-9])\(','*(')
+							_calc = RE_REPLACE(_calc,'(?<=[0-9])x','*x')
+							//replace ^
+							if CHR(94) _in_ _calc { //figure out how to do POW(x,y)
+								_pow = SPLIT(_calc,CHR(94))
+								
+								for _i=1; _i < ARRAYSIZE(_pow); _i++ { //figure out how to extract (
+									_pos = 0
+									_substr = SUBSTR(_pow[_i-1],STRLEN(_pow[_i-1])-1,1)
+									if _substr == CHR(41) {
+										_pos = SPLIT(_pow[_i-1],CHR(40))
+										_x = CHR(40)+_pos[ARRAYSIZE(_pos)-1]
+										
+									}
+									else; _x = TOSTR(_substr)
+									_y = SUBSTR(_pow[_i],0,1) //figure out how to do this with more numbers than one
+									_start = "%(TOSTR(_x))%(CHR(94))%(_y)"
+									_result = "POW(%(TOSTR(_x)),%(_y))"
+									if _i != 0;_calc = REPLACE(_calc,_start,_result)
+								}
+								//_calc = REPLACE(_calc,CHR(94),'+')
+							}
+							//replace if
+							_calc = REPLACE(_calc,'&\text{if','')
+						
+						
+						if 'begin' _in_ _buff; _TEMP += _calc
+						elseif ARRAYSIZE(_buff) == 3; _txt,= '"'+_calc+'"'
+						elseif ARRAYSIZE(_buff) == 1 {
+							_TEMP = ERASE(_TEMP,STRLEN(_TEMP)-1,1)
+							_txt ,= '"'+_TEMP+'"'
+							_TEMP = ""
+						}
+						else; _TEMP += TOSTR(_calc)+CHR(44)
+					}
+					elseif CHR(34) _in_ _buff {
+						_buff = REPLACE(_buff,CHR(34),'§§§')
+						SETDELIM(_buff,'§§§')
+						for _i=0; _i < ARRAYSIZE(_buff); _i++ {
+							//each uneven is " enclosed
+							if (_i%2) == 0; continue;
+							_buff[_i] = REPLACE(_buff[_i],CHR(44),"!(c0)")
+						}
+						_buff = REPLACE(TOSTR(_buff),'§§§','')
+						_txt ,= '"' + _buff + '"'
+					} 
+					else; _txt ,= '"' + _buff + '"'
+				} 
+			}
+        	_txt ,= ("","}")
+		
+			_x = FCLOSE(_ref)
+			//_x = FMOVE(_ref,'pkmn')
+		}
+		_ref = "pkmn/" + _name + ".dic"
+		if FOPEN(_ref,'w') {
+			//run through txt array
+			foreach _txt; _i {
+				_x = FWRITE(_ref,_i)
+			}
+			_x = FCLOSE(_ref)
+		}
+		count++
+		--
+		"\0\![set,choicetimeout,-1]\![set,balloontimeout,-1]\_q\f[align,center]Parsing Progress\n\n\f[default]/
+		%(_out)/
+		\![raise,OnBattleTranslate]"
+	}
+}
+

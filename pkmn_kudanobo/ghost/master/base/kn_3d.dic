@@ -1,0 +1,135 @@
+/* kn_3d.dic
+ *
+ * Enables all base functions for 3D plugin usage
+ * and sets respective variables unique to the plugin.
+ * 
+ * Functions:
+ * - 3D Variables
+ * - 3D Plugin Initializing
+ * - Rendering and starting boot dialogue in kn_bootend.dic
+ * - Lip movement functions
+ * - Scope changes
+ * - Surface changes
+ * - Setting character
+ * - Setting accessory
+ * - Setting topmost and camera movement
+ * - Switching visibility of debug information
+ * - Resetting the plugin
+ * - Base plugin functions: On3DBoot, On3DErrEnd,
+ *   On3DCharacterChange, On3DMothionChange
+ */
+
+//3D base support variables
+On3DVariables
+{
+	uka3d = "plugin\uka3d\uka3d_proxy.dll" //plugin location
+	charnb = 2 //number of models to render
+	ontop = 1 //sets models on top
+	camlock = 0 //locks camera movement
+	lipflag = 0 //tracks talking
+}
+
+//Initializes the plugin with the amount of characters
+On3DInit
+{
+    _str = "0"
+    for _x = 1; _x < charnb ; _x++
+	{
+		_str += "," + TOSTR(_x)
+	}
+    FUNCTIONEX(uka3d, "create", sakurahwnd, SHIORI3FW.ShellPath,_str,_str,_argv[0])
+}
+//Base plugin function, occurs after On3DInit
+On3DBoot
+{ 
+	On3DRender
+	--
+	OnBoot_Dialogue
+}
+//Renders models, surfaces and sets camera features
+On3DRender //ref0=surface , ref1=camera
+{
+	//Fetches possible reference values
+	_s = 0; _c = 0
+	if TOINT(reference0) > 0; _s = TOINT(reference0)
+	if TOINT(reference1) > 0; _c = TOINT(reference1)
+
+	//Sets Topmost and Camera control
+	_top = "false"; _cam = "true"
+	if ontop; _top = "true"
+	if camlock; _cam = "false"
+	FUNCTIONEX(uka3d, "control", "topmost", _top )
+	FUNCTIONEX(uka3d, "control", "camera", _cam )
+	//Sets current camera here (NOTE. NOT FUNCTIONABLE)
+	// FUNCTIONEX(uka3d, "camera", "set",'00', 0)
+
+	//Renders the characters with their respective models.
+	for _x = (charnb-1); _x >= 0 ; _x--
+	{
+		FUNCTIONEX(uka3d, "scope", _x)
+		FUNCTIONEX(uka3d, "character", "set", _x+1)
+		FUNCTIONEX(uka3d, "surface", "set", _s)
+	}
+}
+
+
+//lip flag changes; enables disables mouth movement
+L {
+    lipflag = !lipflag
+    if lipflag; L0
+    else; L1
+}
+L0 {"\![embed,OnL0]"}
+L1 {"\![embed,OnL1]"}
+OnL0 { 
+	lipflag = 0
+	FUNCTIONEX(uka3d,"lipsync","false")
+}
+OnL1 { 
+	lipflag = 1
+	FUNCTIONEX(uka3d,"lipsync","true") 
+}
+
+//Scope changes
+OnC { FUNCTIONEX(uka3d,"scope",_argv[0]) }
+OnC0 {FUNCTIONEX(uka3d,"scope","0") }
+OnC1 {FUNCTIONEX(uka3d,"scope","1") }
+C0 {"\![embed,OnC0]"}
+C1 {"\![embed,OnC1]"}
+
+//Surface changes
+OnSu { FUNCTIONEX(uka3d, "surface", "set",_argv[0]) }
+OnS { FUNCTIONEX(uka3d, "surface", "set",reference0) }
+OnSuSync { FUNCTIONEX(uka3d, "surface", "setsync", "uka3d_suf", _argv[0] ) }
+OnSSync { FUNCTIONEX(uka3d, "surface", "setsync", "uka3d_suf", reference0 ) }
+
+//Set character
+OnCharSet { FUNCTIONEX(uka3d, "character", "set", _argv[0]) }
+//Set accessory
+OnAccSet { FUNCTIONEX(uka3d, "acce", "set", _argv[0], _argv[1]) }
+
+//Toggle topmost
+OnTopSwitch
+{
+	ontop = !ontop
+	if ontop; FUNCTIONEX(uka3d, "control", "topmost", "true" )
+	else; FUNCTIONEX(uka3d, "control", "topmost", "false" )
+}
+//Toggle user camera movement
+OnCamSwitch
+{
+	camlock = !camlock
+	if camlock; FUNCTIONEX(uka3d, "control", "camera", "false" )
+	else; FUNCTIONEX(uka3d, "control", "camera", "true" )
+}
+
+//Debug information (framerate etc)
+OnDebug { FUNCTIONEX(uka3d, "control", "debuginfo", "change" ) }
+
+//Resets the plugin
+OnAllReset { FUNCTIONEX(uka3d, "allreset") }
+
+// Base plugin function
+On3DErrEnd { FUNCTIONEX(uka3d, "allreset") }
+On3DCharacterChange : void {}
+On3DMothionChange : void {}

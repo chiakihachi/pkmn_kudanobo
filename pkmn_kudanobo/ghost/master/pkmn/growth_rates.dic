@@ -1,0 +1,12 @@
+growth_rates : array {
+
+//id,identifier,formula
+
+"1,slow,5*POW(x,3)/4"
+"2,medium,POW(x,3)"
+"3,fast,4*POW(x,3)/5"
+"4,medium-slow,6*POW(x,3)/5-15*POW(x,2)+100*x-140"
+"5,slow-then-very-fast,POW(x,3)*(100-x)/50,x<=50,POW(x,3)*(150-x)/100,50<x<=68,POW(x,3)*(1274+POW((x%3),2)-9*(x%3)-20FLOOR(x/3))/1000,68<x<=98,POW(x,3)*(160-x)/100,x>98"
+"6,fast-then-very-slow,POW(x,3)*(24+FLOOR(x+1/3))/50,x<=15,POW(x,3)*(14+x)/50,15<x<=35,POW(x,3)*(32+FLOOR(x/2))/50,x>35"
+
+}

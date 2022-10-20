@@ -1,0 +1,671 @@
+/* kn_pkmn.dic
+ *
+ * Includes all pokemon related functions rn like scouting, the map, pokemon teams etc.
+ * 
+ * Functions:
+ * - Map, map menu and encounter screen
+ */
+
+
+//Opens respective function, either map or encounter screen
+OnPKMN_Scout {
+    if encounter; OnMap_Battle
+    else; OnMap_Render
+}
+//Variables to initialize
+OnMap_Variables {
+    player = (0,0)
+    encounter = 0
+    mapmode = "Safari"
+}
+//This is literally just the map 'image'
+map : array {
+    //0 empty
+    //1 grass
+    //2 water
+    //3 path - no pkmn
+    //4 sand
+    //5 rock
+    //6 mud
+    //10 kudari  11 nobori - not steppable
+    "11,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+    "3,3,3,1,1,1,1,4,0,0,0,4,4,2,2,0,0"
+    "3,3,3,1,1,1,4,4,4,0,4,2,2,2,2,2,0"
+    "1,3,3,1,1,4,4,4,4,4,4,2,2,2,2,2,2"
+    "1,1,3,1,1,1,1,4,4,4,4,2,2,2,2,2,2"
+    "1,1,3,1,1,1,1,0,0,0,0,0,0,0,0,0,0"
+    "0,1,3,3,3,3,0,0,5,5,5,0,0,0,0,0,0"
+    "0,1,1,1,3,3,0,5,5,5,5,5,0,0,0,0,0"
+    "0,1,1,1,3,3,3,5,5,5,5,5,5,0,0,0,0"
+    "0,0,0,0,0,3,0,0,0,0,5,5,5,0,0,0,0"
+    "0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0"
+    "0,0,0,0,6,6,6,0,0,0,0,0,0,0,0,0,0"
+    "0,0,0,6,6,6,6,6,6,6,0,0,0,0,0,0,0"
+    "0,0,0,6,6,6,6,6,6,6,0,0,0,0,0,0,0"
+    "0,0,0,6,6,6,6,6,6,6,0,0,0,0,0,0,0"
+}
+//Image functions to render the fields into the balloon
+Grass {"\_b[images/grass.png,inline,--option=use_self_alpha]"}
+Grass_Player {"\_b[images/grassplayer.png,inline,--option=use_self_alpha]"}
+Water {"\_b[images/water.png,inline,--option=use_self_alpha]"}
+Water_Player {"\_b[images/waterplayer.png,inline,--option=use_self_alpha]"}
+Sand {"\_b[images/sand.png,inline,--option=use_self_alpha]"}
+Sand_Player {"\_b[images/sandplayer.png,inline,--option=use_self_alpha]"}
+Rock {"\_b[images/rock.png,inline,--option=use_self_alpha]"}
+Rock_Player {"\_b[images/rockplayer.png,inline,--option=use_self_alpha]"}
+Mud {"\_b[images/mud.png,inline,--option=use_self_alpha]"}
+Mud_Player {"\_b[images/mudplayer.png,inline,--option=use_self_alpha]"}
+Path {"\_b[images/path.png,inline,--option=use_self_alpha]"}
+Path_Player {"\_b[images/pathplayer.png,inline,--option=use_self_alpha]"}
+Empty {"\_b[images/empty.png,inline,--option=use_self_alpha]"}
+Empty_Player {"\_b[images/emptyplayer.png,inline,--option=use_self_alpha]"}
+Encounter {"\_b[images/encounter.png,inline,--option=use_self_alpha]"}
+Kudari {"\_b[images/kudari.png,inline,--option=use_self_alpha]"}
+Kudari_Player {"\_b[images/kudari.png,inline,--option=use_self_alpha]"}
+Nobori {"\_b[images/nobori.png,inline,--option=use_self_alpha]"}
+Nobori_Player {"\_b[images/nobori.png,inline,--option=use_self_alpha]"}
+
+//This renders the map with the player, 9 width 6 height; player at 5,4
+OnMap_Render {
+    _tile = Empty; _tileplayer = ""; _map = ""
+    _gap = (player[0]-4,player[1]-3)
+    _over = (player[0])
+    _marker = _gap
+    for _i = 0; _i < 54; _i++ {
+        if player[0] == _marker[0] && player[1]==_marker[1]; _tileplayer = "player"
+        else; _tileplayer = ""
+        if _gap[1] < 0 {
+            _map += Empty
+            if (_i+1)%9 == 0; _gap[1] = _gap[1]+1
+            _marker = _gap
+            continue
+        }
+        elseif _gap[1] >= ARRAYSIZE(map) {
+            _map += Empty
+            continue
+        }
+        else {
+            if _marker[0] < 0 || _marker[0] >= ARRAYSIZE(map[_marker[1]]); _map += Empty
+            else; _map += OnMap_Tile(_marker[1],_marker[0],_tileplayer,_argv[0])
+            _marker[0] += 1
+        } 
+        if (_i+1)%9 == 0 {
+            _marker[1] = _marker[1]+1
+            _marker[0] = _gap[0]
+            
+        }  
+    }
+    --
+    "\b2\f[align,right]\f[outline,true]\q[Menu,OnMap_Menu]\_l[0,0]%(_map)\w8"
+    --
+    if _argv[0]; OnMap_Encounter
+}
+//Figures out what image to render
+OnMap_Tile {
+    _tile = "Empty"
+    
+    case map[_argv[0]][_argv[1]] {
+        when 1; _tile = "Grass"
+        when 2; _tile = "Water"
+        when 3; _tile = "Path"
+        when 4; _tile = "Sand"
+        when 5; _tile = "Rock"
+        when 6; _tile = "Mud"
+        when 10; _tile = "Kudari"
+        when 11; _tile = "Nobori"
+        others; _tile = "Empty"
+    }
+    if _argv[2] == "player"; _tile += "_Player"
+    if _argv[3] == 1 && _argv[2] == "player"; _tile = "Encounter"
+    EVAL(_tile)
+}
+
+//Shiori function for key presses.
+OnKeyPress { //only works when you click on their icon, not them!!!
+    _movement = 0
+    case reference0 {
+        when "w" {
+            if player[1] > 0 && ASEARCH(map[player[1]-1][player[0]],OnMap_Block) == -1 && !encounter {
+                _movement = 1
+                player[1]--
+            }
+        }
+        when "s" {
+            if player[1] < ARRAYSIZE(map)-1 && ASEARCH(map[player[1]+1][player[0]],OnMap_Block) == -1 && !encounter {
+                _movement = 1
+                player[1]++
+            }
+        }
+        when "a" {
+            if player[0] > 0 && ASEARCH(map[player[1]][player[0]-1],OnMap_Block) == -1 && !encounter {
+                _movement = 1
+                player[0]--
+            } 
+        }
+        when "d" {
+            if player[0] < ARRAYSIZE(map[player[1]])-1 && ASEARCH(map[player[1]][player[0]+1],OnMap_Block) == -1 && !encounter {
+                _movement = 1
+                player[0]++
+                
+            } 
+        }
+    }
+    if OnMap_PKMN && _movement; encounter = 1
+    if _movement; OnMap_Render(encounter)
+}
+//Tiles that you can't step on
+OnMap_Block : array { 
+    "10"
+    "11"
+    "0"
+}
+//Renders chance for encounter, if yes 1 if no 0
+OnMap_PKMN {
+    _tiles = IARRAY
+    _tiles = (1,2,4,5,6)
+    if RAND(100) < 15 && ASEARCH(map[player[1]][player[0]],_tiles) != -1; 1
+    else; 0
+}
+
+
+//Menu for the settings, bag and team view
+OnMap_Menu {
+    "\b2\_q\f[align,right]\f[outline,true]\q[Map,OnMap_Render]\n\n/
+    \f[align,left]\f[outline,false]/
+    \q[Bag,OnMap_Bag]\n/
+    \q[Team,OnPKMN_Team]\n/
+    Mode: \q[%(mapmode),OnMap_Mode]\n/
+    PKMN Names: \q[%(languagename),OnMap_Language]\n\n/
+    \q[Close scouting,OnMap_Cancel]"
+}
+OnMap_Bag {
+    //item pockets divides items into different categories
+    "\b2\_q\f[align,right]\f[outline,true]\q[Map Menu,OnMap_Menu]\n\n/
+    \f[align,left]\f[outline,false]/
+    Pokeballs: %(pokeball)\n"
+}
+OnMap_Mode {
+    if mapmode == "Fight"; mapmode = "Safari"
+    else; mapmode = "Fight"
+    OnMap_Menu
+}
+OnMap_Language {
+    language = (language++)%13
+    if language == 0 || language == 10; language++
+    OnMap_Menu
+}
+languagename {
+    case language {
+        when 1; "Japanese"
+        when 2; "Romaji"
+        when 3; "Korean"
+        when 4; "Chinese"
+        when 5; "French"
+        when 6; "German"
+        when 7; "Spanish"
+        when 8; "Italian"
+        when 9; "English"
+        when 11; "Japanese again??"
+        when 12; "Chinese again??"
+    }
+}
+
+
+//Fetches all info for encounterpkmn
+OnMap_Encounter {
+    _type = 0; encountpkmn = IARRAY; _nb = 1; _abilities = IARRAY; _lvl = 5
+    encounthp = 1; encountstatus = 0
+    //fetch tile player is on and had encounter
+    case map[player[1]][player[0]] {
+        when 1; _type = (1,7,12,14,18) //grass
+        when 2; _type = (3,11,15) //water
+        when 4; _type = (5,9,10,13) //sand
+        when 5; _type = (2,6,16,10001) //rock
+        when 6; _type = (4,8,17,10002) //mud
+    }
+    //fetch all pkmn per type from pkmn_types.dic
+    _pkmn = OnPKMN_TYPE("pokemon_types",_type)
+    //draw random pokemon //TODO: IT NEEDS TO MEET LEVEL CRITERIA
+    _nb = ARRAYSIZE(_pkmn)
+    _nb = _pkmn[RAND(_nb)][0]
+    encountpkmn = pokemon[TOINT(_nb)-1][0]
+    
+    //draw gender
+    encountpkmn ,= OnDraw_Gender(encountpkmn[0])
+    //draw nature
+    encountpkmn ,= RAND(24)+1
+    //draw ability
+    _abilities = OnPKMN_ARRAY0("pokemon_abilities",encountpkmn[0])
+    encountpkmn ,= _abilities[RAND(ARRAYSIZE(_abilities)-1)][1]
+    //draw level (based on current team pkmn)
+    encountpkmn ,= _lvl
+    //calculate xp
+    encountpkmn ,= OnPKMN_EXP(encountpkmn[0],_lvl)
+    //give moves
+    encountpkmn ,= OnDraw_Move(encountpkmn[0],_lvl)
+    //iv
+    _hp = RAND(31); _atk = RAND(31);
+    _def = RAND(31); _spatk = RAND(31);
+    _spdef = RAND(31); _speed = RAND(31);
+    encountpkmn ,= (_hp,_atk,_def,_spatk,_spdef,_speed)
+    //ev
+    encountpkmn ,= (0,0,0,0,0,0)
+    //hp value for battle
+    encounthp = TOINT(OnPKMN_StatENCOUNT("hp"))
+    //status condition for battle : see move_meta_ailments
+    encountstatus = 0
+	//safari mode thrown rocks
+	encountrock = 0
+	//safari mode thrown food
+	encountfood = 0
+    if encountpkmn[0] == ""; OnMap_Encounter
+    OnMap_Battle
+}
+//REMEMBER TO FACTOR IN SLOTS FOR EVOLUTION WITH ABILITIES (later note wtf does this mean idk)
+OnDraw_Gender {
+    case pokemon_species[_argv[0]][8] {
+        when 0; 2 //0= male
+        when 1 { //1= 1:7
+            if RAND(7) == 6; 1
+            else; 2
+        }
+        when 2 { //2= 1:3
+            if RAND(3) == 2; 1
+            else; 2
+        }
+        when 4; RAND(1)+1 //4= 1:1
+        when 6 { //6= 3:1
+            if RAND(3) == 2; 2
+            else; 1
+        }
+        when 7 { //7= 7:1
+            if RAND(7) == 6; 2
+            else; 1
+        }
+        when 8; 1 //8= female
+        when -1; 3 //-1= no gender
+    }  
+}
+OnDraw_Move {
+    /* fallback moves
+        237,hidden-power
+        263,facade
+        218,frustration
+        216,return
+        496,round
+        156,rest
+    */
+    _arr = IARRAY
+    _nb = TOINT(_argv[0])
+    _lvl = TOINT(_argv[1])
+    _a = EVAL("pokemon_moves_"+_nb)
+    _moves = IARRAY; _c = 0; _temp = 0
+    if ARRAYSIZE(_a) == 0 {
+        _arr = "%(_nb),20,237"
+        _arr ,= "%(_nb),20,263"
+        _arr ,= "%(_nb),20,218"
+        _arr ,= "%(_nb),20,216"
+        _arr ,= "%(_nb),20,496"
+        _arr ,= "%(_nb),20,156"
+    }
+    else {
+        foreach _a; _i {
+            if TOINT(_i[0]) == _nb && TOINT(_i[4]) <= _lvl; _arr ,= _i
+        }
+    }
+    if ARRAYSIZE(_arr) > 4 {
+        for _i = 0; _i < 4; _i++ {
+            _c = RAND(ARRAYSIZE(_arr))
+            _moves = (_moves,_arr[_c][2])
+            _arr[_c] = IARRAY
+        }
+    } 
+    else {
+        for _i = 0; _i < 4; _i++ {
+            if _i > (ARRAYSIZE(_arr)-1);
+                _moves = (_moves,"NULL")
+            else; 
+                _moves = (_moves,_arr[_i][2])
+        }
+    }
+    _moves
+}
+//Renders interface for encounters
+OnMap_Battle {
+    _pkmn = NAME(encountpkmn[0]-1) //pokemon[encountpkmn[0]-1][1]
+    _gender = ""; _actions = ""; _stat = ""; _items = ""
+    if encountpkmn[1] == 1; _gender = "♀"
+    elseif encountpkmn[1] == 2; _gender = "♂"
+    else; _gender = ""
+    _lvl = encountpkmn[4]
+    if mapmode == "Safari" {
+        _items = "Rocks:%(encountrocks) Food:%(encountfood)"
+        _actions = "\q[Pokeball,OnMap_BallSafari]   \q[Rock,OnMap_Rock]   \q[Food,OnMap_Food]   "
+    }
+	elseif _argv[0] == "battle" {
+        _actions = "\q[%(_argv[1]),OnBattle]"
+    } 
+    else {
+        _hp = TOINT(OnPKMN_StatENCOUNT("hp"))
+        _stat = "%(encounthp)hp%(CHR(47))%(_hp)hp"
+        _actions = "\q[Pokeball,OnMap_BallFight]   \q[Bag,OnMap_Bag,fight]   \q[Team,OnMap_Team,fight]   "
+    }
+    
+    "\c\b[2]\_q\f[align,right]/
+    %(_stat)  %(_pkmn) %(_gender) LVL:%(_lvl)\n\n/
+    \f[align,left]/
+    \_l[0,110]%(_argv[0])/
+    \_l[0,125]%(_actions)\q[Flee,OnMap_Flee]\n/
+    Balls: %(pokeball) %(_items)"
+}
+
+//Fight mode actions
+OnMap_BallFight {
+    pokeball = TOINT(pokeball)-1
+    _checks = 0; _catchrate = 1; _a = 1; _b = 1
+    _catchrate = pokemon_species[encountpkmn[0]-1][9]
+    _hpmax = OnPKMN_StatENCOUNT("hp") //hp at full health
+    _hpcurrent = encounthp //hp currently
+    _bonusball = 1 //different ball bonus
+    _bonusstatus = 1 //status condition bonus: 2.5 sleep/freeze, 1.5 paralyze/poison/burn, 1 other
+    case encountstatus {
+        when 2-3; _bonusstatus = 2.5
+        when 1,4-5; _bonusstatus = 1.5
+        others; _bonusstatus = 1
+    }
+    _passPower = 1 //idk what this is man
+    //if _a is 1044480 or greater, guaranteed catch
+    _a = (3*_hpmax) - (2*_hpcurrent)
+    _a = (_a*4096*_catchrate*_bonusball)/(3*_hpmax)
+    _a = FLOOR(_a)*_bonusstatus*_passPower
+    //_a = FLOOR(((3*_hpmax-2*_hpcurrent)*4096*_catchrate*_bonusball)/(3*_hpmax)) * _bonusstatus * _passPower
+    //shake probability
+    _b = 1044480/_a
+    _b = SQRT(_b)
+    _b = SQRT(_b)
+    _b = 65536/_b
+    _b = FLOOR(_b)
+    for _x = 0; _x < 4; _x++ {
+        if RAND(65536) <= _b; _checks++
+    }
+    if _checks == 4 || _a >= 1044480 { //if caught
+        _size = ARRAYSIZE(pkmnowned)
+        pkmnowned[_size] = encountpkmn[0]
+        for _x = 1; _x < ARRAYSIZE(encountpkmn); _x++ {
+            pkmnowned[_size] += ","+encountpkmn[_x]
+        }
+        encountpkmn = IARRAY
+        encounter = 0
+        --
+        "You caught the pokemon.\w8\w8\c"
+		--
+		OnMap_Render
+    }
+    else { //if not caught
+        OnMap_Battle( "It wasn't caught.")
+    }
+}
+
+//Safari mode actions
+OnMap_BallSafari {
+    pokeball = TOINT(pokeball)-1
+	_catchrate = pokemon_species[encountpkmn[0]-1][9]
+	_fleerate = 600 - _catchrate
+	_catchrate = _catchrate + (encountrocks*20) - (encountfood*20)
+	_fleerate = _fleerate + (encountrocks*20) - (encountfood*20)
+	
+	if RAND(5000) < _catchrate {
+		_size = ARRAYSIZE(pkmnowned)
+        pkmnowned[_size] = encountpkmn[0]
+        for _x = 1; _x < ARRAYSIZE(encountpkmn); _x++ {
+            pkmnowned[_size] += ","+encountpkmn[_x]
+        }
+        encountpkmn = IARRAY
+        encounter = 0
+        encountrocks = 0
+        encountfood = 0
+        --
+        "You caught the pokemon.\w8\w8\c"
+		--
+		OnMap_Render
+	}
+	else { //not caught
+		if RAND(5500) < _fleerate {
+			encountpkmn = IARRAY
+			encounter = 0
+            encountrocks = 0
+            encountfood = 0
+			--
+			"The Pokemon fled.\w9\w9\c"
+			--
+			OnMap_Render
+		}
+      else; OnMap_Battle( "It wasn't caught.")
+	}
+}
+OnMap_Rock {
+    if encountrocks >= 10; OnMap_Battle( "You've thrown enough rocks.")
+    else {
+        encountrocks++
+        _catchrate = pokemon_species[encountpkmn[0]-1][9]
+	    _fleerate = 600 - _catchrate
+	    _fleerate = _fleerate + (encountrocks*20) - (encountfood*20)
+        if RAND(2000) < _fleerate {
+            encountpkmn = IARRAY
+			encounter = 0
+            encountrocks = 0
+            encountfood = 0
+			--
+			"The Pokemon fled.\w9\w9\c"
+			--
+			OnMap_Render
+        }
+        else;
+            OnMap_Battle( "You throw a rock.")
+    }
+}
+OnMap_Food {
+    if encountfood >= 10; OnMap_Battle( "You've thrown enough food.")
+    else {
+        encountfood++
+        OnMap_Battle( "You throw some food.")
+    }
+}
+//Fleeing for both modes
+OnMap_Flee {
+    encounter = 0
+    encountpkmn = IARRAY
+    OnMap_Render
+}
+
+
+//Pokemon team and box views
+OnPKMN_Team {
+    /* .Render six pkmn overview
+       .IF Pokemon clicked, switch to single view
+    */
+    _txt = "\b[2]\_q"; _count = 6; _mark = 0
+    if ARRAYSIZE(pkmnteam) < 6; _count = ARRAYSIZE(pkmnteam)
+    for _i = 0; _i < _count; _i++ {
+        _mark = TOINT(pkmnteam[_i][0])
+        _pkmn = pokemon[pkmnowned[_pkmn]-1][1]
+        _lvl = pkmnowned[_mark][4]
+        _hpmax = TOINT(OnPKMN_Stat(_mark,"hp"))
+        _hpcurrent = TOINT(pkmnteam[_i][1])
+        _txt += "%(_pkmn) lvl:%(_lvl) hp:%(_hpcurrent)%(CHR(47))%(_hpmax)\n"
+    }
+    _txt
+}
+OnPKMN_Box
+{
+    /* .Print list of pokemonowned array
+       .IF Pokemon clicked, switch to single view with functions RELEASE & TO TEAM
+       .EVENTUALLY filter/sort functions(?) by level(range), name, stat, nature
+    */
+}
+
+
+
+//Fetching pokemon info. Do NOT touch these they work they are fine.
+OnPKMN_Stat { //shedinja hp always 1
+    _arr = IARRAY; _lvl = 1; _base = 1; _iv = 0; _ev = 0; _stat = 0; _nature = 1.0
+    _lvl = OnPKMN_Owned[_argv[0]][4]
+    _base = OnPKMN_ARRAY0("pokemon_stats",OnPKMN_Owned[_argv[0]][0])[0][2]
+    _iv = OnPKMN_Owned[_argv[0]][10]
+    _ev = OnPKMN_Owned[_argv[0]][16]
+    _stat = OnPKMN_Owned[_argv[0]][2]
+
+    //hp
+    if OnPKMN_Owned[_argv[0]][0] == 292; _arr ,= 1
+    else {
+        _hp = 1.0
+        _hp = _ev/4
+        _hp = FLOOR(_hp)
+        _hp = (2*_base)+_iv+_hp*_lvl
+        _hp = _hp/100
+        _hp = FLOOR(_hp)
+        _hp = _hp+_lvl+10
+        //_arr ,=  FLOOR( ( ( (2*_base) +_iv+FLOOR( _ev/4) )*_lvl ) /100 )+_lvl+10
+        //_arr ,= EVAL('FLOOR( ( ( (2*'+_base+') +'+_iv+'+FLOOR( '+_ev+'/4) )*'+_lvl+' ) /100 )+'+_lvl+'+10')
+        _arr ,= _hp
+    }
+    if _argv[1] == "hp" {
+        _arr
+        return
+    }
+    
+    //others
+    for _i = 0; _i < 5; _i++ {
+        _base = OnPKMN_ARRAY0("pokemon_stats",OnPKMN_Owned[_argv[0]][0])[_i+1][2]
+        _iv = OnPKMN_Owned[_argv[0]][11+_i]
+        _ev = OnPKMN_Owned[_argv[0]][17+_i]
+        
+        if _i == (natures[_stat-1][3])-2; _nature = 1.1 //increase
+        elseif _i == (natures[_stat-1][2])-2; _nature = 0.9 //decrease
+        else; _nature = 1.0 //default
+        _arr ,= EVAL("FLOOR( (FLOOR( ( (2*"+_base+"+"+_iv+"+FLOOR( "+_ev+"/4) )*"+_lvl+")/100 )+5 )*"+_nature+")")
+        
+    }
+    _arr
+}
+OnPKMN_StatENCOUNT {
+    _arr = IARRAY; _lvl = 1; _base = 1; _iv = 0; _ev = 0; _stat = 0; _nature = 1.0
+    _lvl = encountpkmn[4]
+    _base = OnPKMN_ARRAY0("pokemon_stats",encountpkmn[0])[0][2]
+    _iv = encountpkmn[10]
+    _ev = encountpkmn[16]
+    _stat = encountpkmn[2]
+    _calc = 0.0
+
+    //hp
+    if encountpkmn[0] == 292; _arr ,= 1
+    else {
+        _hp = 1.0
+        _hp = _ev/4
+        _hp = FLOOR(_hp)
+        _hp = (2*_base)+_iv+_hp*_lvl
+        _hp = _hp/100
+        _hp = FLOOR(_hp)
+        _hp = _hp+_lvl+10
+        //_arr ,=  FLOOR( ( ( (2*_base) +_iv+FLOOR( _ev/4) )*_lvl ) /100 )+_lvl+10
+        //_arr ,= EVAL('FLOOR( ( ( (2*'+_base+') +'+_iv+'+FLOOR( '+_ev+'/4) )*'+_lvl+' ) /100 )+'+_lvl+'+10')
+        _arr ,= _hp
+    }
+    if _argv[0] == "hp" {
+        _arr
+        return
+    }
+    //others
+    for _i = 0; _i < 5; _i++ {
+        _base = OnPKMN_ARRAY0("pokemon_stats",encountpkmn[0])[_i+1][2]
+        _iv = encountpkmn[11+_i]
+        _ev = encountpkmn[17+_i]
+        
+        if _i == (natures[_stat-1][3])-2; _nature = 1.1 //increase
+        elseif _i == (natures[_stat-1][2])-2; _nature = 0.9 //decrease
+        else; _nature = 1.0 //default
+        _calc = _ev/4
+        _calc = ( (2*_base+_iv+FLOOR(_calc)*_lvl)/100 ) + 5
+        _calc = FLOOR(_calc) + 5
+        _calc = FLOOR(_calc) * _nature
+        _arr ,= _calc
+        //_arr ,= EVAL('FLOOR( (FLOOR( ( (2*'+_base+'+'+_iv+'+FLOOR( '+_ev+'/4) )*'+_lvl+')/100 )+5 )*'+_nature+')')
+    }
+    _arr
+}
+OnPKMN_ARRAY0 {
+    _arr = IARRAY; _temp = IARRAY; _nb = 0
+    _temp = EVAL(_argv[0])
+    _nb = TOINT(_argv[1])
+    
+    for _i = 0; _i < ARRAYSIZE(_temp); _i++ {
+        if _temp[_i][0] == _nb; _arr ,= _temp[_i]
+        else; continue
+    }
+    
+    _arr
+    
+}
+OnPKMN_TYPE {
+    _arr = IARRAY; _temp = IARRAY
+    _temp = EVAL(_argv[0])
+    _argv[0] = IARRAY
+    
+    for _i = 0; _i < ARRAYSIZE(_temp); _i++ {
+        if ASEARCH(_argv,_temp[_i][1]) != -1; _arr ,= _temp[_i]
+        else; continue
+    }
+    _arr
+}
+NAME {
+    _nb = pokemon[RE_ASEARCH(_argv[0],pokemon)][0]
+    _name = ""; _temp = pokemon_species_names
+    for _i=0; _i < ARRAYSIZE(_temp); _i++ {
+        if _temp[_i][0] == _nb && _temp[_i][1] == language; _name = _temp[_i][2]
+        else; continue
+    }
+    _name
+}
+OnPKMN_EXP {
+    _growth = pokemon_species[TOINT(_argv[0])-1][14]
+    _lvl = TOINT(_argv[1])
+    _exp = 0
+    for _i=0; _i < ARRAYSIZE(experience); _i++ {
+        if experience[_i][0] == _growth && experience[_i][1] == _lvl;
+            _exp = experience[_i][2]
+        else; continue
+    }
+    _exp
+}
+
+
+
+//Misc functions
+
+//IV determined when caught, 0-31
+//EV through training,510ev across all stats
+//hp,attack,defense,sp.atk,sp.def,speed
+OnPKMN_Owned : array {
+    //pokemon[id-1],gender[id-1],natures[id-1],pokemon_abilities[id],level,exp,4*moves[id],IV,EV
+    // Starter PKMN (set in pokedex.dic)
+    /*"1,2,4,1,5,100,14,15,NULL,NULL,0,0,0,0,0,0,0,0,0,0,0,0"
+    "445,2,11,8,78,100,NULL,NULL,NULL,NULL,24,12,30,16,23,5,74,190,91,48,84,23"*/
+    pkmnowned
+}
+OnPKMNRESET{
+    pkmnowned = IARRAY
+    pkmnowned ,= ("1,2,4,1,5,100,14,15,NULL,NULL,0,0,0,0,0,0,0,0,0,0,0,0")
+}
+OnPKMN_Growth {
+    EVAL(growth_rates[_argv[0]][_argv[1]])
+}
+
+
+OnBattle_Single {}
+OnBattle_Double {}
+
+OnBattle_Damage {}
+
+NoboriSingle : array {}
+NoboriDouble : array {}
+KudariDouble : array {}

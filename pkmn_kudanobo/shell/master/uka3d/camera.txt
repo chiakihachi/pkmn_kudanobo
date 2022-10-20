@@ -1,0 +1,17 @@
+camera00
+{
+    //default.angvlim,85.0,-85.0
+    default.angvlim,20.0,-20.0
+
+    camparam00.ang,-15.0,-15.0
+    camparam00.len,35.0
+    camparam00.tpos,0.0,11.0,0.0
+    camparam00.naf,5.0,300
+    camparam00.fov,50.0
+    
+    camparam01.angvlim,85.0,-85.0
+}
+camera01
+{
+    default.angvlim,85.0,-85.0
+}

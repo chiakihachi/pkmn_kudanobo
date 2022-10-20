@@ -1,0 +1,96 @@
+/* kn_aitalk.dic
+ *
+ * Sakura and Kero menus as well as subsequent functions.
+ * 
+ * Functions:
+ * - AiTalk to enable random talk
+ * - OnAiTalk_Choose to draw from random pool
+ */
+
+//AiTalk functionality based on SHIORI
+OnAiTalk 
+{
+    /* Unused template AiTalk
+        if RAND(100) < communicateratio
+        {
+            StartCommunicate;
+        }
+        elseif mikireflag != 0
+        {
+            MikireTalk;
+        }
+    */
+	if CHAIN.IDName != "";
+		lastTalk = ChainTalk
+    else;
+        lastTalk = OnAiTalk_Choose
+    lastTalk
+}
+OnAiTalk_Choose : pool {
+    OnAiTalk_KudaUser
+    OnAiTalk_NoboUser
+    OnAiTalk_KudaNobo
+    case Time {
+        when "morning"; morningdialogue
+        when "midday"; noondialogue
+        when "evening"; eveningdialogue
+        when "night"; nightdialogue
+    }
+}
+
+OnAiTalk_KudaUser : nonoverlap
+{
+	if battleaddon == 1; "K:You should battle more."
+	if battleaddon != 1; "K:You look strong(P,) let's fight when you get some Pokemon!"
+    "K:You're interesting."
+    "K:I like the subway(P.)It's good for battles."
+    "K:Follow the rules!"
+    "K:You would like Galvantula(P.) Thunder wave doesn't hurt(P.) Not that much."
+    "K:Everything is Archeops' perch."
+    "K:Haxorus is big(P.) It's a nice Pokemon."
+    "K:Remember your safety checks."
+    --
+    "\e"
+}
+OnAiTalk_NoboUser : nonoverlap
+{
+	"N:Thank you for having us."
+    "N:I hope Chandelure doesn't accidentally singe your station(P...)"
+    "N:I really enjoy it here and with a bit of time(P,) we could feel as at home as in the subway."
+    --
+    "\e"
+}
+OnAiTalk_KudaNobo : nonoverlap
+{
+    "K:%(OnSlow('You(q0)re gay(d0)',3))N:(P...) no you."
+    --
+    "\e"
+}
+
+
+morningdialogue : nonoverlap
+{
+    "K:Just managed to keep Niisan in bed(P.) Cuddles are great!"
+    "N:I'm a morning riser(P,) but Kudari makes it really hard for me to start the day early when he keeps clinging to me the moment I move."
+    "K:Admit it you liked that this morning(P.)N:I don't know what you're talking about- this shouldn't be casual conversation Kudari."
+    --
+    "\e"
+}
+noondialogue : nonoverlap
+{
+	"N:I am really looking forward to lunch.K:Boooo(P,) I don't wanna cook."
+    --
+    "\e"
+}
+eveningdialogue : nonoverlap
+{
+    "N:I got us a nice desert for today(P.)K:Again(P?) Not that I am complaining(P.) You bring nice deserts(P.)"
+    --
+    "\e"
+}
+nightdialogue : nonoverlap
+{
+    "K:It's late(P.)N:We should think of tomorrows shifts(P...)"
+    --
+    "\e"
+}

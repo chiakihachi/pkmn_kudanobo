@@ -1,0 +1,6 @@
+move_damage_classes : array {
+ //id,identifier
+"1,status"
+"2,physical"
+"3,special"
+}
