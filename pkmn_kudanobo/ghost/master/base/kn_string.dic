@@ -14,7 +14,7 @@ On_username
 
 On_homeurl //update path
 {
-	"https://raw.githubusercontent.com/changeside/pkmn_kudanobo/main/pkmn_kudanobo/"
+	"https://raw.githubusercontent.com/chiakihachi/pkmn_kudanobo/main/pkmn_kudanobo/"
 }
 
 On_recommendrootbutton.caption
