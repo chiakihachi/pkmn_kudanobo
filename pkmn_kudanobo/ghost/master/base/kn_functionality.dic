@@ -260,13 +260,14 @@ OnUpdateComplete
 {
 	if reference0 == "none" && !update == 0 //if the ghost had nothing to update with
  	{
- 		
+ 		"K:Nothing new.\e"
 	}
 	elseif reference0 == "none" && update;
 		update = 0
  	else //if the ghost has updated successfully
 	{
-        update = 0
+        	"N:We updated our schedules and rules."
+		update = 0
  	}
 }
 OnUpdateFailure

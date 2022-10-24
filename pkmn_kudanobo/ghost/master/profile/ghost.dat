@@ -5,12 +5,12 @@ inputbox.left,929
 scriptbox.left,688
 shiori.debugnotify,0
 Char.VirtualDesktop,bcb5951a-40db-4972-918a-e1dc0eae81e7
-Char0.center,1649
+Char0.center,1612
 scriptbox.top,633
 shell,shell\master\
 FirstBoot,booted
 Char1.center,1389
 shell.ischanged.2,1
 inputbox.top,540
-update.lastexec,719921486
+update.lastexec,719925180
 __system_written_flag_do_not_remove__,written
