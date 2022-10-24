@@ -256,6 +256,7 @@ OnDev {
     \![*]\q[TestFunction,OnTestFunction]\n/
     \![*]\q[Script Input,OnDev_Stuff,scriptinput]\n/
     \![*]\q[Dev Interface,OnDev_Stuff,devinterface]\n/
+	\![*]\q[Updates,OnDev_Updates]/
     \n\![*]\q[Nevermind,OnSakura_Cancel]"
 }
 OnDevShell {
@@ -292,6 +293,12 @@ OnDevReload {
         when "balloon"; "\![reload,balloon]"
         when "ghost"; "\![reload,ghost]"
     }
+}
+OnDev_Updates {
+ "    \q[Make Nar,OnDevCreate,nar]\n/
+    \q[Make Update,OnDevCreate,update]\n/
+    \q[Make Both,OnDevCreate,all]/
+\n\![*]\q[Nevermind,OnSakura_Cancel]"
 }
 OnDevCreate {
     case reference0 {

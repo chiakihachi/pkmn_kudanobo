@@ -6,7 +6,7 @@
  * - AiTalk to enable random talk
  * - OnAiTalk_Choose to draw from random pool
  */
-
+//test
 //AiTalk functionality based on SHIORI
 OnAiTalk 
 {
@@ -70,6 +70,7 @@ OnAiTalk_KudaNobo : nonoverlap
 
 morningdialogue : nonoverlap
 {
+
     "K:Just managed to keep Niisan in bed(P.) Cuddles are great!"
     "N:I'm a morning riser(P,) but Kudari makes it really hard for me to start the day early when he keeps clinging to me the moment I move."
     "K:Admit it you liked that this morning(P.)N:I don't know what you're talking about- this shouldn't be casual conversation Kudari."

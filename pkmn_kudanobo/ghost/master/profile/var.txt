@@ -1,7 +1,10 @@
 Charset,UTF-8
 install,679268968
+homeurl_found,1
 surfacecount,1
-update_result,NG(404)
+homeurl,https://raw.githubusercontent.com/chiakihachi/pkmn_kudanobo/main/pkmn_kudanobo/
+update_result,NG(timeout)
 firstboot,679269006
+update_time,719610059
 commitmemorysize,15128
-lastboot,719323351
+lastboot,719921479
