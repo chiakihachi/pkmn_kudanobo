@@ -106,12 +106,22 @@ OnAid /* import todolist, alarms and reminders */
     "\1\_q\b[2]/
     \f[align,center]Help\n\n[half]\f[align,left]/
     \![*]\q[Open Guide,OnAid_Readme]\n/
+    \![*]\q[Camera Guide,OnAid_Camera]\n/
     %(OnDivider)\n/
     \![*]\q[Empty recycle bin,OnAid_Bin]\n/
     \_l[0,145]\![*]\q[Nevermind,OnCancel]"
 } 
 OnAid_Readme { //opens readme with info
     "\![open,readme]%(OnAid)"
+}
+OnAid_Camera {
+    "\1\_q\b[2]/
+    \f[align,center]Camera Guide\n\n[half]\f[align,left]/
+    ↑↓←→\/Rotate camera\n/
+	Alt+↑↓\/Pan up & down\n/
+	Alt+←→\/Zoom in & out (fast)\n/
+	Shift+↑↓\/Zoom in & out (slow)\n/
+    \_l[0,145]\![*]\q[Nevermind,OnAid]"
 }
 OnAid_Bin { //_gomicheck checks amount of files
 	_gomicheck = FUNCTIONEX("plugin/gomi.dll", "-n")

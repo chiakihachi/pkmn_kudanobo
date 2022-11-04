@@ -4,13 +4,13 @@ balloon,C:\Users\Chang\Desktop\ssp_2_4_85f\balloon\Dev\pkmn_b\
 inputbox.left,929
 scriptbox.left,688
 shiori.debugnotify,0
-Char.VirtualDesktop,bcb5951a-40db-4972-918a-e1dc0eae81e7
-Char0.center,1612
+Char.VirtualDesktop,63b27d54-f81a-4a5b-b3ea-91861d769293
+Char0.center,1432
 scriptbox.top,633
 shell,shell\master\
 FirstBoot,booted
-Char1.center,1389
+Char1.center,1622
 shell.ischanged.2,1
 inputbox.top,540
-update.lastexec,719925180
+update.lastexec,720898776
 __system_written_flag_do_not_remove__,written
