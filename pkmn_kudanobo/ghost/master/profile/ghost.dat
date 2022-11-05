@@ -5,11 +5,11 @@ inputbox.left,929
 scriptbox.left,688
 shiori.debugnotify,0
 Char.VirtualDesktop,63b27d54-f81a-4a5b-b3ea-91861d769293
-Char0.center,1432
+Char0.center,1332
 scriptbox.top,633
 shell,shell\master\
 FirstBoot,booted
-Char1.center,1622
+Char1.center,1807
 shell.ischanged.2,1
 inputbox.top,540
 update.lastexec,720898776

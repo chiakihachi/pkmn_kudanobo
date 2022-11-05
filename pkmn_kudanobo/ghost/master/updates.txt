@@ -1,8 +1,8 @@
 charset,OSNative
-file,ghost/master/Log.txta219c89709ca028552f5231cc9129670size=15200date=2022-11-04T18:49:04
+file,ghost/master/Log.txt21756528809542cea5992b0ed5bc0a02size=15870date=2022-11-04T21:06:05
 file,ghost/master/base/kn_3d.dic9fe08bcdb97e9b26ebc63ba1d1696145size=3611date=2022-10-16T13:16:16
 file,ghost/master/base/kn_bootend.dicb0d2e721268edb4a635746cc2819c94asize=5080date=2022-10-17T15:39:06
-file,ghost/master/base/kn_functionality.dicf3059a9e8e41d9bab60895bfdf7b9495size=6666date=2022-10-24T12:15:16
+file,ghost/master/base/kn_functionality.dica7d92e64c88f3c6940c76ff111f4866asize=6683date=2022-11-05T13:31:30
 file,ghost/master/base/kn_string.dic93eabc08eba787fa9fe12ed72a1dbba0size=2863date=2022-10-20T20:38:23
 file,ghost/master/descript.txt2db3ad183760c96bf41c4dfcc9f1fbdesize=247date=2022-07-12T15:08:54
 file,ghost/master/extend/kn_aitalk.dic894e8e1e2554c3ac460dc221ebb1d1a9size=2558date=2022-10-26T18:51:58

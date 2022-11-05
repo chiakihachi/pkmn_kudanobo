@@ -266,8 +266,10 @@ OnUpdateComplete
 		update = 0
  	else //if the ghost has updated successfully
 	{
-        	"N:We updated our schedules and rules."
+        "N:We updated our schedules and rules."
+		--
 		update = 0
+		On3DInit
  	}
 }
 OnUpdateFailure
